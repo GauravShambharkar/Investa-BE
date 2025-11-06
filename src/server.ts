@@ -11,20 +11,16 @@ const investa = express().use(express.json(), helmet());
   if (!process.env.DATABASE_URL) {
     return new Error("DATABASE_URL is missing");
   }
-
+  
   await mongoose
-    .connect(process.env.DATABASE_URL!)
-    .then(() => console.log(chalk.green("Connected To MongoDB!")))
-    .catch((err) =>
-      console.error(chalk.red("MongoDB connection failed:"), err)
-    );
+  .connect(process.env.DATABASE_URL!)
+  .then(() => console.log(chalk.green("Connected To MongoDB!")))
+  .catch((err) =>
+    console.error(chalk.red("MongoDB connection failed:"), err)
+);
 })();
 
-investa.use("/investa/v1/readStocks", (req, res) => {
-  res.send({
-    message: "Welcome to Investa API v1 - Read Stocks Endpoint",
-  });
-});
+
 
 investa.use(`${process.env.API_VERSION}`, askAiRoute);
 
