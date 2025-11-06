@@ -4,7 +4,7 @@ import mongoose from "mongoose";
 dotenv.config();
 import chalk from "chalk";
 import helmet from "helmet";
-import { askAiRoute } from "./Routes/Route.js";
+import { apiRoute } from "./Routes/Route.js";
 const investa = express().use(express.json(), helmet());
 
 (async () => {
@@ -22,7 +22,7 @@ const investa = express().use(express.json(), helmet());
 
 
 
-investa.use(`${process.env.API_VERSION}`, askAiRoute);
+investa.use(`${process.env.API_VERSION}`, apiRoute);
 
 const PORT = process.env.PORT || 5000;
 

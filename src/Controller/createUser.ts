@@ -4,6 +4,14 @@ import { userModel } from "../Model/Models.js";
 export async function createUser(req: Request, res: Response) {
   const { name, email } = req.body;
 
+  const userExists = await userModel.findOne({ email });
+  if (userExists) {
+    return res.status(400).send({
+      ok: false,
+      errMsg: "user already exists in the database",
+    });
+  }
+
   const user = await userModel.create({
     email: email,
     name: name,
@@ -19,6 +27,6 @@ export async function createUser(req: Request, res: Response) {
   res.send({
     ok: true,
     errMsg: "user has created succesfully",
-    userData: user
+    userData: user,
   });
 }

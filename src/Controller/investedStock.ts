@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 import chalk from "chalk";
 import { userModel } from "../Model/Models.js";
 
+// get method
 export async function investedStock(req: Request, res: Response) {
   const { email } = req.params;
 
@@ -13,15 +14,15 @@ export async function investedStock(req: Request, res: Response) {
     });
   }
 
+
   const stock = await userModel.findOne({ email });
 
   if (!stock) {
     return res.status(400).send({
       ok: false,
-      errMsg: "couldnt find stock",
+      errMsg: "couldnt find user",
     });
   }
-
   res.send({
     ok: true,
     msg: stock.stocks,

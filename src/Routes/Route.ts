@@ -3,18 +3,27 @@ import dotenv from "dotenv";
 import { analyseStock } from "../Controller/analyseStockController.js";
 import { investedStock } from "../Controller/investedStock.js";
 import { createUser } from "../Controller/createUser.js";
+import { addNewStocks } from "../Controller/addStock.js";
 dotenv.config();
-const askAiRoute = express.Router();
+const apiRoute = express.Router();
 
-askAiRoute.get(`${process.env.SERVER_HEALTH}`, (req, res) => {
+apiRoute.get(`${process.env.SERVER_HEALTH}`, (req, res) => {
   res.send({
     ok: true,
     msg: "server health is fine",
   });
 });
 
-askAiRoute.get(`${process.env.INVESTED_STOCK_ENDPOINT}`, investedStock);
-askAiRoute.post(`${process.env.CREATE_USER_ENDPOINT}`, createUser);
-askAiRoute.post(`${process.env.ANALYSE_STOCK_ENDPOINT}`, analyseStock);
+// fetching stocks
+apiRoute.get(`${process.env.INVESTED_STOCK_ENDPOINT}`, investedStock);
 
-export { askAiRoute };
+// creating user
+apiRoute.post(`${process.env.CREATE_USER_ENDPOINT}`, createUser);
+
+// add stock
+apiRoute.post(`${process.env.ADD_NEW_STOCK_ENDPOINT}`, addNewStocks);
+
+// stock analysis
+apiRoute.post(`${process.env.ANALYSE_STOCK_ENDPOINT}`, analyseStock);
+
+export { apiRoute };

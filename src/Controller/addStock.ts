@@ -1,8 +1,20 @@
 import type { Request, Response } from "express";
 import { userModel } from "../Model/Models.js";
 
-export async function addStocks(req: Request, res: Response) {
+export async function addNewStocks(req: Request, res: Response) {
   const { email, name, price } = req.body;
+
+  const stockExists = await userModel.findOne({
+    email,
+    "stocks.name": name,
+  });
+
+  if (stockExists) {
+    return res.status(300).send({
+      ok: false,
+      errMsg: `${name} already exists in the database`,
+    });
+  }
 
   const newStock = await userModel.findOneAndUpdate(
     { email },
@@ -18,7 +30,8 @@ export async function addStocks(req: Request, res: Response) {
           $position: 0,
         },
       },
-    }
+    },
+    { new: true }
   );
 
   if (!newStock) {
