@@ -21,6 +21,7 @@
   "homepage": "https://github.com/GauravShambharkar/Investa-BE#readme",
   "description": "",
   "dependencies": {
+    "@google/genai": "^1.29.0",
     "@types/dotenv": "^6.1.1",
     "@types/node": "^24.9.1",
     "chalk": "^5.6.2",
