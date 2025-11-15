@@ -1,5 +1,3 @@
-
-
 export const StockTypesAndRisks = {
   Blue_Chip: {
     Meaning:
@@ -38,5 +36,3 @@ export const StockTypesAndRisks = {
     Meaning: "Poor management, bad execution, supply chain issues.",
   },
 };
-
-

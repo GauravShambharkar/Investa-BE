@@ -11,28 +11,48 @@ export async function analyseStock(req: Request, res: Response) {
 
   const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
   if (!GEMINI_API_KEY) {
-    return console.error(chalk.bgRed("gemini api is missing"));
-  }
-
-  const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
-
-  const aiResponse = await ai.models.generateContent({
-    model: "gemini-2.5-flash",
-    contents: `Act like you are an expert finacial investment advisor, do market analysis about this stock ${stock}, here is market analysis ${StockInvestmentChecklist}  
-      based on market analysis provide equivalant option whether to into ${stock} or not, the response should only include specifc match of stock type and risk of the stock ${StockTypesAndRisks} 
-      and investment status criteria ${InvestmentStatusCriteria} about the ${stock}`,
-  });
-
-  if (!aiResponse) {
-    console.log(chalk.bgRed("had error while generating reponse"));
-    return res.send({
+    console.error(chalk.bgRed("gemini api is missing"));
+    return res.status(400).send({
       ok: false,
-      errMsg: "had error while generating reponse",
+      errMsg: "gemini api is missing",
     });
   }
 
-  res.send({
-    ok: true,
-    msg: aiResponse.text?.split(/\n\n|\n/).toString(),
-  });
+  if (!stock) {
+    console.log("stock name is required");
+    return res.status(400).send({
+      ok: false,
+      errMsg: "stock name is required, before analysing the stocks",
+    });
+  }
+
+  try {
+    const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
+
+    const aiResponse = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: `Act like you are an expert finacial investment advisor, do market analysis about this stock ${stock}, here is market analysis ${StockInvestmentChecklist}  
+      based on market analysis provide equivalant option whether to into ${stock} or not, the response should only include specifc match of stock type and risk of the stock ${StockTypesAndRisks} 
+      and investment status criteria ${InvestmentStatusCriteria} about the ${stock}`,
+    });
+
+    if (!aiResponse) {
+      console.log(chalk.bgRed("had error while generating reponse"));
+      return res.send({
+        ok: false,
+        errMsg: "had error while generating reponse",
+      });
+    }
+
+    res.send({
+      ok: true,
+      msg: aiResponse.text?.split(/\n\n|\n/).toString(),
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      ok: false,
+      errMsg: error,
+    });
+  }
 }

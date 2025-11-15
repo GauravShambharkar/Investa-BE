@@ -4,29 +4,44 @@ import { userModel } from "../Model/Models.js";
 export async function createUser(req: Request, res: Response) {
   const { name, email } = req.body;
 
-  const userExists = await userModel.findOne({ email });
-  if (userExists) {
+  if (!name || !email) {
     return res.status(400).send({
       ok: false,
-      errMsg: "user already exists in the database",
+      errMsg: "Name and Email are require to create user Account",
     });
   }
 
-  const user = await userModel.create({
-    email: email,
-    name: name,
-  });
+  try {
+    const userExists = await userModel.findOne({ email });
+    if (userExists) {
+      return res.status(400).send({
+        ok: false,
+        errMsg: "user already exists in the database",
+      });
+    }
 
-  if (!user) {
-    return res.status(500).send({
+    const user = await userModel.create({
+      email: email,
+      name: name,
+    });
+
+    if (!user) {
+      return res.status(500).send({
+        ok: false,
+        errMsg: "Server had issue while creating user",
+      });
+    }
+
+    res.send({
+      ok: true,
+      errMsg: "user has created succesfully",
+      userData: user,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
       ok: false,
-      errMsg: "Server had issue while creating user",
+      errMsg: error,
     });
   }
-
-  res.send({
-    ok: true,
-    errMsg: "user has created succesfully",
-    userData: user,
-  });
 }

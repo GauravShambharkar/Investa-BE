@@ -13,18 +13,25 @@ export async function investedStock(req: Request, res: Response) {
       errMsg: "Email in param is important",
     });
   }
+  try {
+    const stock = await userModel.findOne({ email });
 
+    if (!stock) {
+      return res.status(400).send({
+        ok: false,
+        errMsg: "couldnt find user",
+      });
+    }
+    res.send({
+      ok: true,
+      msg: stock.stocks,
+    });
+  } catch (error) {
+    console.log(error);
 
-  const stock = await userModel.findOne({ email });
-
-  if (!stock) {
-    return res.status(400).send({
+    res.status(500).send({
       ok: false,
-      errMsg: "couldnt find user",
+      errMsg: error,
     });
   }
-  res.send({
-    ok: true,
-    msg: stock.stocks,
-  });
 }

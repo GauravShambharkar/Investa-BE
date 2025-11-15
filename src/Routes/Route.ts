@@ -4,6 +4,7 @@ import { analyseStock } from "../Controller/analyseStockController.js";
 import { investedStock } from "../Controller/investedStock.js";
 import { createUser } from "../Controller/createUser.js";
 import { addNewStocks } from "../Controller/addStock.js";
+import { fetchStocks } from "../Controller/fetchStocks.js";
 dotenv.config();
 const apiRoute = express.Router();
 
@@ -25,5 +26,8 @@ apiRoute.post(`${process.env.ADD_NEW_STOCK_ENDPOINT}`, addNewStocks);
 
 // stock analysis
 apiRoute.post(`${process.env.ANALYSE_STOCK_ENDPOINT}`, analyseStock);
+
+// fetch stocks
+apiRoute.get(`${process.env.UPSTOCK_API_ENDPOINT}`, fetchStocks);
 
 export { apiRoute };
