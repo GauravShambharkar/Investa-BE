@@ -1,20 +1,21 @@
 import axios from "axios";
 import type { Request, Response } from "express";
-import dotenv from "dotenv";
-dotenv.config();
 
-export const fetchStocks = async (req: Request, res: Response) => {
-  const { instrument_key } = req.body;
+export const getStockChart = async (req: Request, res: Response) => {
+  const { instrument_key, interval } = req.body;
 
   try {
     const response = await axios.get(
-      "https://api.upstox.com/v2/market-quote/ltp",
+      "https://api.upstox.com/v2/historical-candle",
       {
         headers: {
           Authorization: `Bearer ${process.env.UPSTOCK_ACCESS_TOKEN}`,
         },
         params: {
-          instrument_key: instrument_key,
+          instrument_key,
+          interval,
+          to_date: new Date().toISOString(),
+          from_date: "2024-01-01", // or dynamic
         },
       }
     );

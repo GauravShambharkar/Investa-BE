@@ -4,7 +4,9 @@ import { analyseStock } from "../Controller/analyseStockController.js";
 import { investedStock } from "../Controller/investedStock.js";
 import { createUser } from "../Controller/createUser.js";
 import { addNewStocks } from "../Controller/addStock.js";
+import { getAccessToken } from "../Controller/getAccessTokens.js";
 import { fetchStocks } from "../Controller/fetchStocks.js";
+import { getStockChart } from "../Controller/getStockChart.js";
 dotenv.config();
 const apiRoute = express.Router();
 
@@ -15,7 +17,7 @@ apiRoute.get(`${process.env.SERVER_HEALTH}`, (req, res) => {
   });
 });
 
-// fetching stocks
+// fetching users invested stocks
 apiRoute.get(`${process.env.INVESTED_STOCK_ENDPOINT}`, investedStock);
 
 // creating user
@@ -27,7 +29,13 @@ apiRoute.post(`${process.env.ADD_NEW_STOCK_ENDPOINT}`, addNewStocks);
 // stock analysis
 apiRoute.post(`${process.env.ANALYSE_STOCK_ENDPOINT}`, analyseStock);
 
-// fetch stocks
-apiRoute.get(`${process.env.UPSTOCK_API_ENDPOINT}`, fetchStocks);
+// generate acces tokens for the stocks
+apiRoute.get(`${process.env.INVESTED_GET_ACCESS_TOKEN_ENDPOINT}`, getAccessToken);
+
+// get the stock price
+apiRoute.post(`${process.env.INVESTED_FETCH_STOCK_ENDPOINT}`, fetchStocks);
+
+// get the stock chart
+apiRoute.get(`${process.env.INVESTED_GET_STOCK_CHART_ENDPOINT}`, getStockChart);
 
 export { apiRoute };
