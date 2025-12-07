@@ -28,6 +28,6 @@ apiRoute.post(`${process.env.ADD_NEW_STOCK_ENDPOINT}`, addNewStocks);
 apiRoute.post(`${process.env.ANALYSE_STOCK_ENDPOINT}`, analyseStock);
 
 // get the stock price
-apiRoute.post(`${process.env.INVESTED_FETCH_STOCK_ENDPOINT}`, fetchStocks);
+apiRoute.get(`${process.env.FETCH_STOCKS_ENDPOINT}`, fetchStocks);
 
 export { apiRoute };
