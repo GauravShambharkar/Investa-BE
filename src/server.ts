@@ -37,19 +37,17 @@ investa.use(
 investa.use(express.json());
 investa.use(helmet());
 
-(async () => {
-  if (!DATABASE_URL) {
-    console.error(chalk.red("DATABASE_URL is missing from environment config"));
-    return;
-  }
-
-  await mongoose
+// Optional database connection (does not block server startup if missing/invalid)
+if (DATABASE_URL && DATABASE_URL.trim() !== "") {
+  mongoose
     .connect(DATABASE_URL)
     .then(() => console.log(chalk.green("Connected To MongoDB!")))
     .catch((err) =>
-      console.error(chalk.red("MongoDB connection failed:"), err)
+      console.warn(chalk.yellow("MongoDB connection warning (continuing without DB):"), err.message || err)
     );
-})();
+} else {
+  console.log(chalk.yellow("DATABASE_URL not set — running backend in stateless mode."));
+}
 
 investa.use(`${API_VERSION}`, apiRoute);
 
