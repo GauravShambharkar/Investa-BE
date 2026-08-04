@@ -28,8 +28,8 @@ const envSchema = z.object({
   NEWS_API_KEY: z.string().optional(),
   NEWS_KEY: z.string().optional(),
   API_VERSION: z.string().default("/investa/v1"),
-  CLIENT_URL: z.string().default("https://investaai.vercel.app"),
-  LOCAL_CLIENT_URL: z.string().default("http://localhost:5173"),
+  CLIENT_URL: z.string().optional(),
+  LOCAL_CLIENT_URL: z.string().optional(),
   SERVER_HEALTH: z.string().default("/health"),
   ANALYSE_STOCK_ENDPOINT: z.string().default("/analyse/:stock"),
   CREATE_USER_ENDPOINT: z.string().default("/createUser"),
@@ -54,16 +54,12 @@ export const NEWS_API_KEY =
   "";
 export const API_VERSION = env.API_VERSION;
 
-// Conditional logic for Production & Localhost URLs
+// Conditional logic for Production & Localhost URLs strictly from env files
 export const IS_PRODUCTION = env.NODE_ENV === "production";
-export const CLIENT_URL = env.CLIENT_URL;
-export const LOCAL_CLIENT_URL = env.LOCAL_CLIENT_URL;
+export const CLIENT_URL = env.CLIENT_URL || process.env.CLIENT_URL || "";
+export const LOCAL_CLIENT_URL = env.LOCAL_CLIENT_URL || process.env.LOCAL_CLIENT_URL || "";
 
 export const ALLOWED_ORIGINS = [
-  env.CLIENT_URL,
-  env.LOCAL_CLIENT_URL,
-  "http://localhost:5173",
-  "http://localhost:3000",
-  "http://localhost:4000",
-  "https://investaai.vercel.app",
-];
+  CLIENT_URL,
+  LOCAL_CLIENT_URL,
+].filter(Boolean) as string[];
