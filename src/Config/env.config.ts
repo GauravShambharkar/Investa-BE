@@ -28,7 +28,6 @@ const envSchema = z.object({
   GEMINI_API_KEY: z.string().optional(),
   TWELVE_DATA_API_KEY: z.string().optional(),
   NEWS_API_KEY: z.string().optional(),
-  NEWS_KEY: z.string().optional(),
   API_VERSION: z.string().default("/investa/v1"),
   CLIENT_URL: z.string().optional(),
   LOCAL_CLIENT_URL: z.string().optional(),
@@ -50,11 +49,7 @@ export const GEMINI_API_KEY =
 export const TWELVE_DATA_API_KEY =
   env.TWELVE_DATA_API_KEY || process.env.TWELVE_DATA_API_KEY || "";
 export const NEWS_API_KEY =
-  env.NEWS_KEY ||
-  env.NEWS_API_KEY ||
-  process.env.NEWS_KEY ||
-  process.env.NEWS_API_KEY ||
-  "";
+  env.NEWS_API_KEY || process.env.NEWS_API_KEY || "";
 export const API_VERSION = env.API_VERSION;
 
 // Conditional logic for Production & Localhost URLs strictly from env files
