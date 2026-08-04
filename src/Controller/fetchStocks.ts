@@ -3,64 +3,57 @@ import type { Request, Response } from "express";
 import dotenv from "dotenv";
 dotenv.config();
 
-const API_KEY = process.env.TWELVE_DATA_API_KEY
-
+const API_KEY = process.env.TWELVE_DATA_API_KEY;
 export const fetchStocks = async (req: Request, res: Response) => {
   try {
-    const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
-    let nseSymbols: string[] = [];
+    const symbols = req.query.symbols as string;
 
-    // STEP 1 — Fetch NSE symbols A-Z
-    for (const letter of alphabet) {
-      const searchRes = await axios.get(
-        `https://api.twelvedata.com/symbol_search?symbol=${letter}&apikey=${API_KEY}`
-      );
-
-      const filtered = searchRes.data.data?.filter(
-        (s: any) => s.exchange === "NSE"
-      );
-
-      if (filtered) {
-        filtered.forEach((item: any) => nseSymbols.push(item.symbol));
-      }
+    if (!symbols) {
+      return res.status(400).json({ ok: false, error: "symbols is required" });
     }
 
-    // Remove duplicates
-    nseSymbols = [...new Set(nseSymbols)];
+    const url = `https://api.twelvedata.com/time_series?symbol=${symbols}&interval=1day&outputsize=30&apikey=${API_KEY}`;
 
-    // STEP 2 — Batch into chunks (Twelve Data supports large batches)
-    const chunkSize = 40;
-    const chunks: string[][] = [];
+    const response = await axios.get(url);
+    const data = response.data;
 
-    for (let i = 0; i < nseSymbols.length; i += chunkSize) {
-      chunks.push(nseSymbols.slice(i, i + chunkSize));
-    }
+    const finalData: any[] = [];
 
-    let finalData: any[] = [];
-
-    // STEP 3 — Fetch /quote for each batch
-    for (const chunk of chunks) {
-      const symbolString = chunk.join(",");
-
-      const quoteRes = await axios.get(
-        `https://api.twelvedata.com/quote?symbol=${symbolString}&apikey=${API_KEY}`
-      );
-
-      const data = quoteRes.data;
-
-      // Format properly (Twelve Data returns object keyed by symbol)
+    // CASE 1 — Multiple symbols → object with keys
+    if (!data.meta) {
       Object.keys(data).forEach((key) => {
-        const st = data[key];
-
-        // skip if bad response
-        if (!st || st.code === 400 || st.status === "error") return;
+        const item = data[key];
+        if (!item || item.status === "error") return;
 
         finalData.push({
-          symbol: st.symbol,
-          name: st.name,
-          price: st.close,
-          currency: st.currency,
+          symbol: item.meta.symbol,
+          name: item.meta.name,
+          price: item.values[0].close,
+          chart: item.values.map((v: any) => ({
+            datetime: v.datetime,
+            close: v.close,
+          })),
         });
+      });
+    }
+
+    // CASE 2 — Single symbol (meta exists at root)
+    else {
+      finalData.push({
+        symbol: data.meta.symbol,
+        name: data.meta.name,
+        price: data.values[0].close,
+        chart: data.values.map((v: any) => ({
+          datetime: v.datetime,
+          close: v.close,
+        })),
+      });
+    }
+
+    if (finalData.length === 0) {
+      return res.status(500).send({
+        ok: false,
+        errMsg: "there is no data in response from the twelve dataAPI",
       });
     }
 
@@ -70,6 +63,6 @@ export const fetchStocks = async (req: Request, res: Response) => {
       stocks: finalData,
     });
   } catch (err: any) {
-    res.status(500).json({ error: err.message });
+    return res.status(500).json({ ok: false, error: err.message });
   }
 };
