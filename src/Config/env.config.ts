@@ -22,12 +22,11 @@ if (process.env.NODE_ENV === "production") {
 const envSchema = z.object({
   PORT: z.string().default("4000"),
   DATABASE_URL: z.string().optional(),
-  NODE_ENV: z
-    .enum(["development", "production", "test"])
-    .default("development"),
+  NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
   GEMINI_API_KEY: z.string().optional(),
   TWELVE_DATA_API_KEY: z.string().optional(),
   NEWS_API_KEY: z.string().optional(),
+  NEWS_KEY: z.string().optional(),
   API_VERSION: z.string().default("/investa/v1"),
   CLIENT_URL: z.string().default("https://investaai.vercel.app"),
   LOCAL_CLIENT_URL: z.string().default("http://localhost:5173"),
@@ -44,12 +43,15 @@ export const env = envSchema.parse(process.env);
 export const PORT = env.PORT;
 export const NODE_ENV = env.NODE_ENV;
 export const DATABASE_URL = env.DATABASE_URL || "";
-export const GEMINI_API_KEY =
-  env.GEMINI_API_KEY || process.env.GEMINI_API_KEY || "";
-export const TWELVE_DATA_API_KEY =
-  env.TWELVE_DATA_API_KEY || process.env.TWELVE_DATA_API_KEY || "";
+export const GEMINI_API_KEY = env.GEMINI_API_KEY || process.env.GEMINI_API_KEY || "";
+export const TWELVE_DATA_API_KEY = env.TWELVE_DATA_API_KEY || process.env.TWELVE_DATA_API_KEY || "";
 export const NEWS_API_KEY =
-  env.NEWS_API_KEY || process.env.NEWS_API_KEY || process.env.VITE_NEWS_API;
+  env.NEWS_KEY ||
+  env.NEWS_API_KEY ||
+  process.env.NEWS_KEY ||
+  process.env.NEWS_API_KEY ||
+  process.env.VITE_NEWS_API ||
+  "";
 export const API_VERSION = env.API_VERSION;
 
 // Conditional logic for Production & Localhost URLs
