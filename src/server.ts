@@ -1,23 +1,17 @@
 import express from "express";
-import dotenv from "dotenv";
 import mongoose from "mongoose";
 import chalk from "chalk";
 import helmet from "helmet";
 import cors from "cors";
 import { apiRoute } from "./Routes/Route.js";
-
-dotenv.config();
+import {
+  PORT,
+  DATABASE_URL,
+  API_VERSION,
+  ALLOWED_ORIGINS,
+} from "./Config/env.config.js";
 
 const investa = express();
-
-// Allowed Origins for CORS configuration
-const allowedOrigins = [
-  "https://investaai.vercel.app",
-  "http://localhost:5173",
-  "http://localhost:3000",
-  "http://localhost:4000",
-  process.env.CLIENT_URL,
-].filter(Boolean) as string[];
 
 investa.use(
   cors({
@@ -26,7 +20,7 @@ investa.use(
       if (!origin) return callback(null, true);
 
       if (
-        allowedOrigins.includes(origin) ||
+        ALLOWED_ORIGINS.includes(origin) ||
         /\.vercel\.app$/.test(origin)
       ) {
         return callback(null, true);
@@ -44,21 +38,20 @@ investa.use(express.json());
 investa.use(helmet());
 
 (async () => {
-  if (!process.env.DATABASE_URL) {
-    return new Error("DATABASE_URL is missing");
+  if (!DATABASE_URL) {
+    console.error(chalk.red("DATABASE_URL is missing from environment config"));
+    return;
   }
 
   await mongoose
-    .connect(process.env.DATABASE_URL!)
+    .connect(DATABASE_URL)
     .then(() => console.log(chalk.green("Connected To MongoDB!")))
     .catch((err) =>
       console.error(chalk.red("MongoDB connection failed:"), err)
     );
 })();
 
-investa.use(`${process.env.API_VERSION || "/investa/v1"}`, apiRoute);
-
-const PORT = process.env.PORT || 5000;
+investa.use(`${API_VERSION}`, apiRoute);
 
 investa.listen(PORT, () => {
   console.log(chalk.blue(`Server running on port ${PORT}`));

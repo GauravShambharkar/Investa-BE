@@ -1,18 +1,16 @@
 import axios from "axios";
 import type { Request, Response } from "express";
-import dotenv from "dotenv";
-dotenv.config();
+import { TWELVE_DATA_API_KEY } from "../Config/env.config.js";
 
-const API_KEY = process.env.TWELVE_DATA_API_KEY;
 export const fetchStocks = async (req: Request, res: Response) => {
   try {
     const symbols = req.query.symbols as string;
 
     if (!symbols) {
-      return res.status(400).json({ ok: false, error: "symbols is required" });
+      return res.status(400).json({ ok: false, error: "symbols parameter is required" });
     }
 
-    const url = `https://api.twelvedata.com/time_series?symbol=${symbols}&interval=1day&outputsize=30&apikey=${API_KEY}`;
+    const url = `https://api.twelvedata.com/time_series?symbol=${symbols}&interval=1day&outputsize=30&apikey=${TWELVE_DATA_API_KEY}`;
 
     const response = await axios.get(url);
     const data = response.data;
@@ -53,7 +51,7 @@ export const fetchStocks = async (req: Request, res: Response) => {
     if (finalData.length === 0) {
       return res.status(500).send({
         ok: false,
-        errMsg: "there is no data in response from the twelve dataAPI",
+        errMsg: "there is no data in response from the twelve data API",
       });
     }
 

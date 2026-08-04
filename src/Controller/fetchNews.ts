@@ -1,12 +1,6 @@
 import axios from "axios";
 import type { Request, Response } from "express";
-import dotenv from "dotenv";
-dotenv.config();
-
-const API_KEY =
-  process.env.VITE_NEWS_API ||
-  process.env.NEWS_API_KEY ||
-  "4ff96fda4b7c418086d078bf65f6f077";
+import { NEWS_API_KEY } from "../Config/env.config.js";
 
 export const fetchNews = async (req: Request, res: Response) => {
   try {
@@ -18,7 +12,7 @@ export const fetchNews = async (req: Request, res: Response) => {
 
     const url = `https://newsapi.org/v2/everything?q=${encodeURIComponent(
       q
-    )}&sortBy=${sortBy}&pageSize=${pageSize}&language=en&apiKey=${API_KEY}`;
+    )}&sortBy=${sortBy}&pageSize=${pageSize}&language=en&apiKey=${NEWS_API_KEY}`;
 
     const response = await axios.get(url);
     const articles = response.data.articles || [];
