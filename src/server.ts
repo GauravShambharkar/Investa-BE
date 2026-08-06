@@ -10,6 +10,7 @@ import {
   API_VERSION,
   ALLOWED_ORIGINS,
 } from "./Config/env.config.js";
+import "./Config/firebase.config.js";
 
 const investa = express();
 

@@ -37,6 +37,11 @@ const envSchema = z.object({
   ADD_NEW_STOCK_ENDPOINT: z.string().default("/addStock"),
   INVESTED_STOCK_ENDPOINT: z.string().default("/investedStock/:email"),
   FETCH_STOCKS_ENDPOINT: z.string().default("/stocks/ltp"),
+
+  // Firebase Admin SDK Credentials
+  FIREBASE_PROJECT_ID: z.string().optional(),
+  FIREBASE_PRIVATE_KEY: z.string().optional(),
+  FIREBASE_CLIENT_EMAIL: z.string().optional(),
 });
 
 export const env = envSchema.parse(process.env);
@@ -48,8 +53,7 @@ export const GEMINI_API_KEY =
   env.GEMINI_API_KEY || process.env.GEMINI_API_KEY || "";
 export const TWELVE_DATA_API_KEY =
   env.TWELVE_DATA_API_KEY || process.env.TWELVE_DATA_API_KEY || "";
-export const NEWS_API_KEY =
-  env.NEWS_API_KEY || process.env.NEWS_API_KEY || "";
+export const NEWS_API_KEY = env.NEWS_API_KEY || process.env.NEWS_API_KEY || "";
 export const API_VERSION = env.API_VERSION;
 
 // Conditional logic for Production & Localhost URLs strictly from env files
@@ -61,3 +65,14 @@ export const LOCAL_CLIENT_URL =
 export const ALLOWED_ORIGINS = [CLIENT_URL, LOCAL_CLIENT_URL].filter(
   Boolean,
 ) as string[];
+
+// Firebase Config Exports (Safely unescapes newline characters in private key)
+export const FIREBASE_PROJECT_ID =
+  env.FIREBASE_PROJECT_ID || process.env.FIREBASE_PROJECT_ID || "";
+export const FIREBASE_CLIENT_EMAIL =
+  env.FIREBASE_CLIENT_EMAIL || process.env.FIREBASE_CLIENT_EMAIL || "";
+export const FIREBASE_PRIVATE_KEY = (
+  env.FIREBASE_PRIVATE_KEY ||
+  process.env.FIREBASE_PRIVATE_KEY ||
+  ""
+).replace(/\\n/g, "\n");
