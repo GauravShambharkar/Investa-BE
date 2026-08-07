@@ -11,6 +11,7 @@ import {
   ALLOWED_ORIGINS,
 } from "./Config/env.config.js";
 import "./Config/firebase.config.js";
+import "./Config/redis.config.js";
 
 const investa = express();
 

@@ -42,6 +42,10 @@ const envSchema = z.object({
   FIREBASE_PROJECT_ID: z.string().optional(),
   FIREBASE_PRIVATE_KEY: z.string().optional(),
   FIREBASE_CLIENT_EMAIL: z.string().optional(),
+
+  // Redis Config
+  REDIS_URL: z.string().optional(),
+  REDIS_CACHE_TTL: z.string().default("900"), // 15 minutes default
 });
 
 export const env = envSchema.parse(process.env);
@@ -76,3 +80,7 @@ export const FIREBASE_PRIVATE_KEY = (
   process.env.FIREBASE_PRIVATE_KEY ||
   ""
 ).replace(/\\n/g, "\n");
+
+// Redis Exports
+export const REDIS_URL = env.REDIS_URL || process.env.REDIS_URL || "redis://127.0.0.1:6379";
+export const REDIS_CACHE_TTL = parseInt(env.REDIS_CACHE_TTL, 10) || 900;
